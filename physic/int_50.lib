@@ -1,0 +1,98 @@
+INIT_INT_50	MACRO
+	MOV	AX,DS:[50*4]
+	MOV	CS:[OLD_50_OFF_],AX
+	MOV	AX,DS:[50*4+2]
+	MOV	CS:[OLD_50_SEG_],AX
+	LEA	AX,INT_0
+	MOV	DS:[50*4],AX
+	MOV	DS:[50*4+2],CS
+ENDM
+REST_INT_50	MACRO
+	MOV	AX,CS:[OLD_50_OFF_]
+	MOV	DS:[50*4],AX
+	MOV	AX,CS:[OLD_50_SEG_]
+	MOV	DS:[50*4+2],AX
+ENDM
+INT_0_PROG	MACRO
+        PUSH    AX
+        PUSH    BX
+        PUSH    CX
+        PUSH    DX
+        PUSH    SI
+        PUSH    DI
+        PUSH    BP
+        PUSH    ES
+        MOV     CS:[INT_0_OLD_SP_],SP
+        MOV     ES,CS:[LEAVE_BLOCK_]
+        MOV     CL,3
+        XOR     AH,AH
+        ROL     AX,CL
+        ADD     AX,CS:[ADRESS_FONT_]
+        MOV     SI,AX
+        MOV     BX,CS:[X_MAX_]
+        DEC     BX
+        ROL     BX,CL
+        MOV     AX,CS:[Y_A_]
+        MUL     WORD PTR CS:[X_MAX_]
+        ROL     AX,CL
+        ADD     AX,CS:[X_A_]
+        ROL     AX,CL
+        MOV     DI,AX
+        MOV     DL,CS:[INK_]
+        MOV     DH,CS:[PAPER_]
+        MOV     BP,DX
+        MOV     CX,8
+INT_0_1:
+        MOV     SP,CX
+        LODSB
+        MOV     CX,8
+INT_0_2:
+        RCL     AL,1
+        JC      INT_0_3
+        XCHG    DL,DH
+INT_0_3:
+        XCHG    AL,DL
+        STOSB
+        XCHG    AL,DL
+        MOV     DX,BP
+        LOOP    INT_0_2
+        MOV     CX,SP
+        ADD     DI,BX
+        LOOP    INT_0_1
+        MOV     AX,CS:[X_MAX_]
+        MOV     BX,CS:[Y_MAX_]
+        INC     WORD PTR CS:[X_A_]
+        CMP     AX,CS:[X_A_]
+        JNE     INT_0_END
+        MOV     WORD PTR CS:[X_A_],0
+        INC     WORD PTR CS:[Y_A_]
+        CMP     BX,CS:[Y_A_]
+        JNE     INT_0_END
+        MOV     WORD PTR CS:[Y_A_],0
+INT_0_END:
+        MOV     SP,CS:[INT_0_OLD_SP_]
+        MOV     AL,20H
+        OUT     20H,AL
+        POP     ES
+        POP     BP
+        POP     DI
+        POP     SI
+        POP     DX
+        POP     CX
+        POP     BX
+        POP     AX
+        IRET
+INT_0_OLD_SP_   DW      0
+        X_MAX_  DW      38
+        Y_MAX_  DW      10
+        X_A_    DW      0
+        Y_A_    DW      0
+        SCREEN_ DB      1
+        LEAVE_BLOCK_    DW      0
+        END_BYTE_       DW      0
+        ADRESS_FONT_    DW      0
+	INK_	DB	0
+	PAPER_	DB	0
+	OLD_50_OFF_	DW	0
+	OLD_50_SEG_	DW	0
+ENDM

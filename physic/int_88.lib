@@ -1,0 +1,44 @@
+INIT_INT_88	MACRO
+	MOV	AX,DS:[88*4]
+	MOV	CS:[OLD_88_OFF_],AX
+	MOV	AX,DS:[88*4+2]
+	MOV	CS:[OLD_88_SEG_],AX
+	LEA	AX,INT_3
+	MOV	DS:[88*4],AX
+	MOV	DS:[88*4+2],CS
+ENDM
+REST_INT_88	MACRO
+	MOV	AX,CS:[OLD_88_OFF_]
+	MOV	DS:[88*4],AX
+	MOV	AX,CS:[OLD_88_SEG_]
+	MOV	DS:[88*4+2],AX
+ENDM
+INT_3_PROG	MACRO
+        PUSH    DI
+	PUSH	ES
+        PUSH    DX
+        CLD
+	MOV	ES,CS:[SEG_VIDEO_]
+        MUL     WORD PTR CS:[INT_3_320_]
+        ADD     AX,BX
+        MOV     DI,AX
+        POP     DX
+        MOV     BX,320
+        SUB     BX,DX
+INT_3_1:
+        MOV     AX,CX
+        MOV     CX,DX
+        REP     MOVSB
+        MOV     CX,AX
+        ADD     DI,BX
+        LOOP    INT_3_1
+	POP	ES
+        POP     DI
+        MOV     AL,20H
+        OUT     20H,AL
+        IRET
+INT_3_320_      DW      320
+SEG_VIDEO_	DW	0A000H
+OLD_88_OFF_	DW	0
+OLD_88_SEG_	DW	0
+ENDM

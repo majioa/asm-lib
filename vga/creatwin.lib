@@ -1,0 +1,68 @@
+HIGH_LEFT	EQU	0DAH
+HIGH_RIGHT	EQU	0BFH
+LOW_LEFT	EQU	0C0H
+LOW_RIGHT	EQU	0D9H
+HIGH_HORIZONTAL	EQU	0C4H
+RIGHT_VERTICAL	EQU	0B3H
+LOW_HORIZONTAL	EQU	0C5H
+LEFT_VERTICAL	EQU	0B4H
+
+CREATE_WINDOW   PROC    NEAR
+        PUSH    SI
+        PUSH    BP
+	CLD
+        PUSH    AX
+        PUSH    BX
+	CALL	ZERO
+        MOV     WORD PTR CS:[X_A_],0
+        MOV     WORD PTR CS:[Y_A_],0
+        MOV     CS:[X_MAX_],DX
+        MOV     CS:[Y_MAX_],CX
+        SUB     CX,2
+        SUB     DX,2
+        MOV     BP,CX
+        MOV     CX,DX
+        MOV     AL,HIGH_LEFT
+        INT	50
+	MOV	AL,HIGH_HORIZONTAL
+CREATE_HORIZ_1:
+	INT	50
+	LOOP	CREATE_HORIZ_1
+	MOV	AL,HIGH_RIGHT
+	INT	50
+	MOV	CX,BP
+CREATE_1:
+	MOV	AL,RIGHT_VERTICAL
+	INT	50
+	MOV	AL,LEFT_VERTICAL
+        ADD     CS:[X_A_],DX
+        INT	50
+        LOOP    CREATE_1
+        MOV     CX,DX
+        MOV     AL,LOW_LEFT
+        INT	50
+	MOV	AL,LOW_HORIZONTAL
+CREATE_HORIZ_2:
+	INT	50
+	LOOP	CREATE_HORIZ_2
+        MOV     AL,LOW_RIGHT
+        INT	50
+        ADD     DX,2
+        ADD     BP,2
+        POP     BX
+        POP     AX
+        MOV     CL,3
+        ROL     DX,CL
+        ROL     BP,CL
+        ROL     BX,CL
+        ROL     AX,CL
+        MOV     CX,BP
+        PUSH    DS
+        MOV     DS,CS:[LEAVE_BLOCK_]
+        XOR     SI,SI
+        INt	88
+        POP     DS
+        POP     BP
+        POP     SI
+        RET
+CREATE_WINDOW   ENDP

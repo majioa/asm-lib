@@ -1,0 +1,7 @@
+SYMTBL	DD	0;€—€‹Ž ‘ˆŒ‚Ž‹œŽ‰ ’€‹ˆ–›
+	DW	0;‘Œ…™…ˆ… Ž Y
+	DW	0;‘Œ…™…ˆ… Ž X
+	DB	0;‚›‘Ž’€ ‘ˆŒ‚Ž‹€
+	DB	0;–‚…’ ˜ˆ”’€
+	DB	0;–‚…’ ”Ž€
+        DB      0,0,0,0,0

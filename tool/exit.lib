@@ -1,0 +1,10 @@
+exit	MACRO
+	cli
+	xor	ax,ax
+	mov	ds,ax
+;	rest_int_9
+	sti
+	MOV	AH,7
+	INT	21H
+	INT	20H
+ENDM

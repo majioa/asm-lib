@@ -1,0 +1,18 @@
+READ_KEY	PROC	NEAR
+	PUSH	DX
+	MOV	DL,CS:[FLAGS_]
+	OR	DL,10000000B
+	MOV	CS:[FLAGS_],DL
+	MOV	byte ptr CS:[KEY_IN_BUF_],0
+	sti
+READ_KEY_1:
+	mov	ah,00
+	int	16h
+	xchg	al,ah
+	cli
+	MOV	DL,CS:[FLAGS_]
+	AND	DL,01111111B
+	MOV	CS:[FLAGS_],DL
+	POP	DX
+	RET
+ENDP
